@@ -1,45 +1,3 @@
-function getWords() {
-  return JSON.parse(localStorage.getItem("words")) || [];
-}
-
-function saveWords(words) {
-  localStorage.setItem(
-    "words",
-    JSON.stringify(words)
-  );
-}
-
-function saveWord(word) {
-
-  const words = getWords();
-
-  const normalizedWord =
-    word.trim().toLowerCase();
-
-  const exists = words.some(
-    w => w.word.toLowerCase() === normalizedWord
-  );
-
-  if (exists) {
-    alert(
-      `La palabra "${normalizedWord}" ya está guardada.`
-    );
-    return false;
-  }
-
-  words.push({
-    id: Date.now(),
-    word: normalizedWord,
-    level: "🟡 Aprendiendo",
-    correct: 0,
-    incorrect: 0
-  });
-
-  saveWords(words);
-
-  return true;
-}
-
 function deleteWord(id) {
 
   const confirmDelete =
@@ -47,13 +5,7 @@ function deleteWord(id) {
 
   if (!confirmDelete) return;
 
-  let words = getWords();
-
-  words = words.filter(
-    w => w.id !== id
-  );
-
-  saveWords(words);
+  deleteWordFromStorage(id);
 
   showPage("words");
 }
@@ -181,7 +133,7 @@ function filterWords() {
     renderWords(filtered);
 }
 
-function addWord() {
+async function addWord() {
 
   const input =
     document.getElementById("newWord");
@@ -198,15 +150,38 @@ function addWord() {
     return;
   }
 
-  const saved =
-    saveWord(word);
+  if (wordExists(word)) {
 
-  if (saved) {
+    alert(
+      `La palabra "${word}" ya está guardada.`
+    );
 
-    input.value = "";
-
-    showPage("words");
+    return;
   }
+
+  alert("Verificando palabra...");
+
+  const result =
+    await validateWord(word);
+
+  if (!result.valid) {
+
+    alert(
+      "❌ No encontré esa palabra en el diccionario."
+    );
+
+    return;
+  }
+
+  addWordToStorage(word);
+
+  alert(
+    "✅ Palabra válida y guardada."
+  );
+
+  input.value = "";
+
+  showPage("words");
 }
 
 function showExplanation() {
