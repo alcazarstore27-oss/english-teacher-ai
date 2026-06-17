@@ -2,20 +2,38 @@ function getWords() {
   return JSON.parse(localStorage.getItem("words")) || [];
 }
 
-function saveWord(word, translation) {
+function saveWord(word) {
+
   const words = getWords();
+
+  const normalizedWord =
+    word.trim().toLowerCase();
+
+  const exists = words.some(
+    w => w.word.toLowerCase() === normalizedWord
+  );
+
+  if (exists) {
+    alert(
+      `La palabra "${normalizedWord}" ya está guardada.`
+    );
+    return false;
+  }
 
   words.push({
     id: Date.now(),
-    word: word,
-    translation: translation,
-    level: "🟡 Aprendiendo"
+    word: normalizedWord,
+    level: "🟡 Aprendiendo",
+    correct: 0,
+    incorrect: 0
   });
 
   localStorage.setItem(
     "words",
     JSON.stringify(words)
   );
+
+  return true;
 }
 
 function showPage(page) {
@@ -32,12 +50,7 @@ function showPage(page) {
 
       <input
         id="newWord"
-        placeholder="Word in English"
-      >
-
-      <input
-        id="translation"
-        placeholder="Traducción en Español"
+        placeholder="Write a word..."
       >
 
       <button onclick="addWord()">
@@ -46,14 +59,16 @@ function showPage(page) {
 
       <hr>
 
-      <h3>Mi Vocabulario</h3>
+      <h3>Mi Vocabulario (${words.length})</h3>
 
       ${
         words.map(w => `
           <div class="word">
             <strong>${w.word}</strong><br>
-            ${w.translation}<br>
-            ${w.level}
+            ${w.level}<br>
+            ✅ ${w.correct}
+            &nbsp;&nbsp;
+            ❌ ${w.incorrect}
           </div>
         `).join("")
       }
@@ -68,12 +83,12 @@ function showPage(page) {
       <h2>🎯 Práctica con la Profesora</h2>
 
       <p>
-      Palabras disponibles:
+      Palabras guardadas:
       <strong>${words.length}</strong>
       </p>
 
       <p>
-      Muy pronto la profesora utilizará estas palabras para crear conversaciones.
+      Próximamente la profesora utilizará estas palabras para conversar contigo.
       </p>
     `;
   }
@@ -85,9 +100,8 @@ function showPage(page) {
 
       <textarea
         id="question"
-        placeholder="Escribe aquí tu pregunta..."
+        placeholder="Escribe tu pregunta..."
         rows="5"
-        style="width:100%;"
       ></textarea>
 
       <button onclick="showExplanation()">
@@ -101,20 +115,24 @@ function showPage(page) {
 
 function addWord() {
 
+  const input =
+    document.getElementById("newWord");
+
   const word =
-    document.getElementById("newWord").value;
+    input.value.trim();
 
-  const translation =
-    document.getElementById("translation").value;
-
-  if (!word.trim()) {
+  if (!word) {
     alert("Debes escribir una palabra.");
     return;
   }
 
-  saveWord(word, translation);
+  const saved =
+    saveWord(word);
 
-  showPage("words");
+  if (saved) {
+    input.value = "";
+    showPage("words");
+  }
 }
 
 function showExplanation() {
@@ -124,10 +142,11 @@ function showExplanation() {
 
   answer.innerHTML = `
     <hr>
+
     <h3>Respuesta de la Profesora</h3>
 
     <p>
-    Próximamente conectaremos la IA aquí.
+    Próximamente conectaremos la profesora IA aquí.
     </p>
   `;
 }
