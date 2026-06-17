@@ -1,16 +1,15 @@
-function getWords(){
-  return JSON.parse(
-    localStorage.getItem("words")
-  ) || [];
+function getWords() {
+  return JSON.parse(localStorage.getItem("words")) || [];
 }
 
-function saveWord(word){
-
+function saveWord(word, translation) {
   const words = getWords();
 
   words.push({
+    id: Date.now(),
     word: word,
-    level: 0
+    translation: translation,
+    level: "🟡 Aprendiendo"
   });
 
   localStorage.setItem(
@@ -19,69 +18,116 @@ function saveWord(word){
   );
 }
 
-function showPage(page){
+function showPage(page) {
 
   const content =
     document.getElementById("content");
 
-  if(page === "words"){
+  if (page === "words") {
 
     const words = getWords();
 
     content.innerHTML = `
-      <h2>Mis Palabras</h2>
+      <h2>📚 Mis Palabras</h2>
 
       <input
         id="newWord"
-        placeholder="Write a word..."
+        placeholder="Word in English"
+      >
+
+      <input
+        id="translation"
+        placeholder="Traducción en Español"
       >
 
       <button onclick="addWord()">
-        Guardar
+        Guardar Palabra
       </button>
 
-      <div id="wordList">
-        ${
-          words
-            .map(
-              w =>
-              `<div class="word">${w.word}</div>`
-            )
-            .join("")
-        }
-      </div>
+      <hr>
+
+      <h3>Mi Vocabulario</h3>
+
+      ${
+        words.map(w => `
+          <div class="word">
+            <strong>${w.word}</strong><br>
+            ${w.translation}<br>
+            ${w.level}
+          </div>
+        `).join("")
+      }
     `;
   }
 
-  if(page === "practice"){
+  if (page === "practice") {
+
+    const words = getWords();
+
     content.innerHTML = `
-      <h2>Práctica</h2>
+      <h2>🎯 Práctica con la Profesora</h2>
 
       <p>
-      Aquí hablaremos con la profesora.
+      Palabras disponibles:
+      <strong>${words.length}</strong>
+      </p>
+
+      <p>
+      Muy pronto la profesora utilizará estas palabras para crear conversaciones.
       </p>
     `;
   }
 
-  if(page === "explanations"){
-    content.innerHTML = `
-      <h2>Explicaciones</h2>
+  if (page === "explanations") {
 
-      <p>
-      Aquí podrás preguntarle a la profesora.
-      </p>
+    content.innerHTML = `
+      <h2>👩‍🏫 Explicaciones</h2>
+
+      <textarea
+        id="question"
+        placeholder="Escribe aquí tu pregunta..."
+        rows="5"
+        style="width:100%;"
+      ></textarea>
+
+      <button onclick="showExplanation()">
+        Preguntar
+      </button>
+
+      <div id="answer"></div>
     `;
   }
 }
 
-function addWord(){
+function addWord() {
 
-  const input =
-    document.getElementById("newWord");
+  const word =
+    document.getElementById("newWord").value;
 
-  if(!input.value.trim()) return;
+  const translation =
+    document.getElementById("translation").value;
 
-  saveWord(input.value);
+  if (!word.trim()) {
+    alert("Debes escribir una palabra.");
+    return;
+  }
+
+  saveWord(word, translation);
 
   showPage("words");
+}
+
+function showExplanation() {
+
+  const answer =
+    document.getElementById("answer");
+
+  answer.innerHTML = `
+    <hr>
+    <h3>Respuesta de la Profesora</h3>
+
+    <p>
+    Próximamente conectaremos la IA aquí.
+    </p>
+  `;
 }
