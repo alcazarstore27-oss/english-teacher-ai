@@ -2,6 +2,13 @@ function getWords() {
   return JSON.parse(localStorage.getItem("words")) || [];
 }
 
+function saveWords(words) {
+  localStorage.setItem(
+    "words",
+    JSON.stringify(words)
+  );
+}
+
 function saveWord(word) {
 
   const words = getWords();
@@ -28,12 +35,27 @@ function saveWord(word) {
     incorrect: 0
   });
 
-  localStorage.setItem(
-    "words",
-    JSON.stringify(words)
-  );
+  saveWords(words);
 
   return true;
+}
+
+function deleteWord(id) {
+
+  const confirmDelete =
+    confirm("¿Deseas eliminar esta palabra?");
+
+  if (!confirmDelete) return;
+
+  let words = getWords();
+
+  words = words.filter(
+    w => w.id !== id
+  );
+
+  saveWords(words);
+
+  showPage("words");
 }
 
 function showPage(page) {
@@ -48,6 +70,11 @@ function showPage(page) {
     content.innerHTML = `
       <h2>📚 Mis Palabras</h2>
 
+      <p>
+        Total de palabras:
+        <strong>${words.length}</strong>
+      </p>
+
       <input
         id="newWord"
         placeholder="Write a word..."
@@ -59,19 +86,15 @@ function showPage(page) {
 
       <hr>
 
-      <h3>Mi Vocabulario (${words.length})</h3>
+      <input
+        id="searchWord"
+        placeholder="Buscar palabra..."
+        onkeyup="filterWords()"
+      >
 
-      ${
-        words.map(w => `
-          <div class="word">
-            <strong>${w.word}</strong><br>
-            ${w.level}<br>
-            ✅ ${w.correct}
-            &nbsp;&nbsp;
-            ❌ ${w.incorrect}
-          </div>
-        `).join("")
-      }
+      <div id="wordList">
+        ${renderWords(words)}
+      </div>
     `;
   }
 
@@ -83,12 +106,12 @@ function showPage(page) {
       <h2>🎯 Práctica con la Profesora</h2>
 
       <p>
-      Palabras guardadas:
-      <strong>${words.length}</strong>
+        Palabras disponibles:
+        <strong>${words.length}</strong>
       </p>
 
       <p>
-      Próximamente la profesora utilizará estas palabras para conversar contigo.
+        Próximamente la profesora creará conversaciones usando tu vocabulario.
       </p>
     `;
   }
@@ -113,6 +136,51 @@ function showPage(page) {
   }
 }
 
+function renderWords(words) {
+
+  return words.map(w => `
+    <div class="word">
+
+      <strong>${w.word}</strong><br>
+
+      ${w.level}<br>
+
+      ✅ ${w.correct}
+      &nbsp;&nbsp;
+      ❌ ${w.incorrect}
+
+      <br><br>
+
+      <button onclick="deleteWord(${w.id})">
+        🗑️ Eliminar
+      </button>
+
+    </div>
+  `).join("");
+}
+
+function filterWords() {
+
+  const search =
+    document
+      .getElementById("searchWord")
+      .value
+      .toLowerCase();
+
+  const words = getWords();
+
+  const filtered =
+    words.filter(
+      w =>
+      w.word.toLowerCase().includes(search)
+    );
+
+  document.getElementById(
+    "wordList"
+  ).innerHTML =
+    renderWords(filtered);
+}
+
 function addWord() {
 
   const input =
@@ -122,7 +190,11 @@ function addWord() {
     input.value.trim();
 
   if (!word) {
-    alert("Debes escribir una palabra.");
+
+    alert(
+      "Debes escribir una palabra."
+    );
+
     return;
   }
 
@@ -130,7 +202,9 @@ function addWord() {
     saveWord(word);
 
   if (saved) {
+
     input.value = "";
+
     showPage("words");
   }
 }
@@ -146,7 +220,7 @@ function showExplanation() {
     <h3>Respuesta de la Profesora</h3>
 
     <p>
-    Próximamente conectaremos la profesora IA aquí.
+      Próximamente conectaremos la Profesora IA.
     </p>
   `;
 }
