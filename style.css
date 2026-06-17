@@ -1,6 +1,7 @@
 body{
   font-family: Arial, sans-serif;
-  background:#f4f4f4;
+  background:#eef2f7;
+  margin:0;
   padding:20px;
 }
 
@@ -9,22 +10,57 @@ body{
   margin:auto;
 }
 
+h1{
+  text-align:center;
+  color:#1e3a8a;
+  margin-bottom:25px;
+}
+
+h2{
+  color:#1e3a8a;
+}
+
 button{
   width:100%;
   padding:15px;
   margin-top:10px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
   font-size:18px;
+  font-weight:bold;
   cursor:pointer;
 }
 
-input{
+button:hover{
+  opacity:0.9;
+}
+
+input,
+textarea{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin-top:10px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  box-sizing:border-box;
+  font-size:16px;
 }
 
 .word{
   background:white;
-  padding:10px;
-  margin-top:5px;
+  padding:15px;
+  margin-top:10px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+hr{
+  margin-top:20px;
+  margin-bottom:20px;
+}
+
+strong{
+  color:#2563eb;
 }
