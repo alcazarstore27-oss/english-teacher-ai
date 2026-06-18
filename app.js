@@ -50,23 +50,47 @@ function showPage(page) {
     `;
   }
 
-  if (page === "practice") {
+ if (page === "practice") {
 
-    const words = getWords();
+  const question =
+    generatePracticeQuestion();
 
-    content.innerHTML = `
-      <h2>🎯 Práctica con la Profesora</h2>
+  content.innerHTML = `
+    <h2>🎯 Práctica con la Profesora</h2>
+
+    <div class="word">
+
+      <h3>English</h3>
 
       <p>
-        Palabras disponibles:
-        <strong>${words.length}</strong>
+        ${question.english}
       </p>
 
+      <h3>Español</h3>
+
       <p>
-        Próximamente la profesora creará conversaciones usando tu vocabulario.
+        ${question.spanish}
       </p>
-    `;
-  }
+
+    </div>
+
+    <textarea
+      id="practiceAnswer"
+      rows="5"
+      placeholder="Write your answer in English..."
+    ></textarea>
+
+    <button onclick="checkPractice()">
+      Enviar Respuesta
+    </button>
+
+    <button onclick="showPage('practice')">
+      Nueva Pregunta
+    </button>
+
+    <div id="practiceResult"></div>
+  `;
+}
 
   if (page === "explanations") {
 
@@ -197,5 +221,47 @@ function showExplanation() {
     <p>
       Próximamente conectaremos la Profesora IA.
     </p>
+  `;
+}
+function checkPractice() {
+
+  const answer =
+    document
+      .getElementById("practiceAnswer")
+      .value
+      .trim();
+
+  const result =
+    document.getElementById(
+      "practiceResult"
+    );
+
+  if (!answer) {
+
+    result.innerHTML = `
+      <div class="word">
+        Escribe una respuesta primero.
+      </div>
+    `;
+
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="word">
+
+      <h3>Tu respuesta</h3>
+
+      <p>${answer}</p>
+
+      <p>
+      ✅ Muy bien Daniel.
+      </p>
+
+      <p>
+      Más adelante la profesora revisará gramática, vocabulario y errores.
+      </p>
+
+    </div>
   `;
 }
